@@ -5,7 +5,10 @@
  */
 package controller;
 
+import dao.ClienteDao;
+import dao.CompraDao;
 import dao.ProdutoDao;
+import dto.CompraDto;
 import dto.ProdutoDto;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,13 +20,16 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author internet
+ * @author gui-f
  */
-@WebServlet(name = "Produto", urlPatterns = {"/Produto"})
-public class Produto extends HttpServlet {
+@WebServlet(name = "Compra", urlPatterns = {"/Compra"})
+public class Compra extends HttpServlet {
 
-    private ProdutoDao dao = new ProdutoDao();
-    private ProdutoDto dto = new ProdutoDto();
+    private CompraDao dao = new CompraDao();
+    private CompraDto dto = new CompraDto();
+    
+    private ClienteDao clienteDao = new ClienteDao();
+    private ProdutoDao produtoDao = new ProdutoDao();
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,62 +42,69 @@ public class Produto extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String flag = request.getParameter("flag");
+         String flag = request.getParameter("flag");
        
        if(flag.equals("buscarTodos")){
            buscarTodos();
-       } else if(flag.equals("buscarUm")){
+       } else if(flag.equals("buscar")){
            int id = Integer.parseInt(request.getParameter("id"));
-           buscarProduto(id);
+           buscar(id);
        } else if(flag.equals("inserir")){
-           dto.setNome(request.getParameter("nome"));
-           dto.setPreco(Float.parseFloat(request.getParameter("preco")));
-           dto.setDesconto(Float.parseFloat(request.getParameter("desconto")));
-           dto.setSecao(request.getParameter("secao"));
-           dto.setUnd_desconto(Integer.parseInt(request.getParameter("unidades_desconto")));
-           dto.setUnidades(Integer.parseInt(request.getParameter("unidades")));
+           float precoTotal = request.getParameter("preco_total");
+           float desconto = 0;
            
-           inserirProduto(dto);
-       } else if(flag.equals("atualizar")){
-           dto.setId(Integer.parseInt(request.getParameter("id")));
-           dto.setNome(request.getParameter("nome"));
-           dto.setPreco(Float.parseFloat(request.getParameter("preco")));
-           dto.setDesconto(Float.parseFloat(request.getParameter("desconto")));
-           dto.setSecao(request.getParameter("secao"));
-           dto.setUnd_desconto(Integer.parseInt(request.getParameter("unidades_desconto")));
-           dto.setUnidades(Integer.parseInt(request.getParameter("unidades")));
+           if(precoTotal >= 100 && precoTotal < 200){
+               desconto = 0.95f; //5% de desconto
+           } else if(precoTotal >= 200 && precoTotal < 300){
+               desconto = 0.9f;//10% de desconto
+           } else if(precoTotal >= 300){
+               desconto = 0.85f;//15% de desconto
+           }
            
-           atualizarProduto(dto);
-       } else if(flag.equals("deletar")){
-           apagarProduto(Integer.parseInt(request.getParameter("id")));
+           String cpf = request.getParameter("cpf");
+           if(cpf != null && !cpf.isEmpty()){
+               String cliente = clienteDao.pesquisarCpf(cpf);
+               if(cliente != null && !cliente.isEmpty() && !cliente.equals("")){
+                   desconto = desconto - 0.05f;//5% de desconto para cliente cadastrado
+               }
+           }
+           
+           dto.setDesconto(desconto);
+           dto.setPrecoTotal(precoTotal);
+           dto.setPrecoComDesconto(precoTotal*desconto);
+           
+           inserir(dto);
+       } else if(flag.equals("adicionarProduto")){
+           int id = Integer.parseInt(request.getParameter("produtoId"));
+           int qntd = Integer.parseInt(request.getParameter("quantidade"));
+           ProdutoDto produto = produtoDao.pesquisarProduto(id);
+           
+           if(qntd == produto.getUnd_desconto()){
+               
+           }
        }
     }
 
     private void buscarTodos(){
+        //TODO: chamar dao com SELECT *
         String list = dao.listar();
         request.setAttribute("lista", list);
-        RequestDispatcher disp = request.getRequestDispatcher("exibirProduto.jsp");
+        RequestDispatcher disp = request.getRequestDispatcher("exibirCliente.jsp");
         disp.forward(request, response);
     }
     
-    private void buscarProduto(long id){
-        String produto = dao.pesquisarId(id);
-        request.setAttribute("produto", produto);
+    private void buscar(int id){
+        String compra = dao.pesquisarId(id);
+        request.setAttribute("compra", compra);
         RequestDispatcher disp = request.getRequestDispatcher("buscar.jsp");
         disp.forward(request, response);
     }
     
-    private void inserirProduto(ProdutoDto produto){
-        dao.inserir(produto);
+    private void inserir(CompraDto dto){
+        dao.inserir(dto);
     }
-    
-    private void atualizarProduto(ProdutoDto produto){
-        dao.atualizar(produto);
-    }
-    
-    private void apagarProduto(int id){
-        dao.remover(id);
-    }
+
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

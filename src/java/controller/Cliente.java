@@ -49,8 +49,23 @@ public class Cliente extends HttpServlet {
            String nome = request.getParameter("nome");
            int idade = Integer.parseInt(request.getParameter("idade"));
            
-       } else if(flag.equals("atualizar")){
+           dto.setCpf(cpf);
+           dto.setIdade(idade);
+           dto.setNome(nome);
            
+           cadastrarCliente(dto);
+       } else if(flag.equals("atualizar")){
+           int id = Integer.parseInt(request.getParameter("id"));
+           String cpf = request.getParameter("cpf");
+           String nome = request.getParameter("nome");
+           int idade = Integer.parseInt(request.getParameter("idade"));
+           
+           dto.setId(id);
+           dto.setCpf(cpf);
+           dto.setIdade(idade);
+           dto.setNome(nome);
+           
+           atualizarCadastro(dto);
        }
     }
 
@@ -58,7 +73,7 @@ public class Cliente extends HttpServlet {
         //TODO: chamar dao com SELECT *
         String list = dao.listar();
         request.setAttribute("lista", list);
-        RequestDispatcher disp = request.getRequestDispatcher("exibir.jsp");
+        RequestDispatcher disp = request.getRequestDispatcher("exibirCliente.jsp");
         disp.forward(request, response);
     }
     
@@ -70,16 +85,11 @@ public class Cliente extends HttpServlet {
     }
     
     private void cadastrarCliente(ClienteDto cliente){
-        String cpf = 
+        dao.inserir(cliente);
     }
     
-    private void atualizarProduto(Produto produto){
-        
-    }
-    
-    private void apagarProduto(Produto produto){
-        
-        
+    private void atualizarCadastro(ClienteDto cliente){
+        dao.atualizar(cliente);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

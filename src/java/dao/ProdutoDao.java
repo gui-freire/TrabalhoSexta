@@ -78,9 +78,9 @@ public class ProdutoDao {
         }
     }
     
-    public void atualizarPreco(int id, float preco){
+    public void atualizar(ProdutoDto produto){
         try{
-            st.execute("UPDATE PRODUTO SET PRECO=" + preco + "WHERE ID=" + id);
+            st.execute("UPDATE PRODUTO SET PRECO=" + produto.getPreco() + "WHERE ID=" + produto.getId());
         } catch(SQLException e){
             System.out.println("Falha ao inserir!\n"+e.getMessage());
         }
@@ -94,19 +94,24 @@ public class ProdutoDao {
         }
     }
     
-    public void atualizarDesconto(int id, float desconto){
-        try{
-            st.execute("UPDATE PRODUTO SET desconto=" + desconto + "WHERE ID=" + id);
-        } catch(SQLException e){
-            System.out.println("Falha ao inserir!\n"+e.getMessage());
+    public ProdutoDto pesquisarProduto(int id){
+    ProdutoDto produto = new ProdutoDto();
+        try {
+            rs = st.executeQuery("SELECT * FROM produto WHERE ID=" + id);
+            if(rs.next()){
+              produto.setId(rs.getInt("ID"));
+              produto.setNome(rs.getString("nome"));
+              produto.setSecao(rs.getString("secao"));
+              produto.setPreco(rs.getFloat("preco"));
+              produto.setUnidades(rs.getInt("unidade"));
+              produto.setDesconto(rs.getFloat("desconto"));
+              produto.setUnd_desconto(rs.getInt("und_desconto"));
+            }
+                
+        } catch (SQLException e) {
+            System.out.println("Falha ao pesquisar\n" + e.getMessage());
         }
-    }
+        return produto;
+    }    
     
-    public void atualizarUnidadesDesconto(int id, int unidades){
-        try{
-            st.execute("UPDATE PRODUTO SET und_desconto=" + unidades + "WHERE ID=" + id);
-        } catch(SQLException e){
-            System.out.println("Falha ao inserir!\n"+e.getMessage());
-        }
-    }
 }

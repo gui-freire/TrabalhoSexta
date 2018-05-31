@@ -12,15 +12,11 @@ package dto;
 public class CompraDto {
     private long id;
     
-    private ProdutoDto produto;
-    
-    private int unidades;
-    
     private float precoTotal;
     
-    private float qntdDesconto; //A CADA X REAIS EM COMPRAS GANHA DESCONTO
-    
     private float desconto;
+    
+    private float precoComDesconto;
 
     /**
      * @return the id
@@ -34,34 +30,6 @@ public class CompraDto {
      */
     public void setId(long id) {
         this.id = id;
-    }
-
-    /**
-     * @return the produto
-     */
-    public ProdutoDto getProduto() {
-        return produto;
-    }
-
-    /**
-     * @param produto the produto to set
-     */
-    public void setProduto(ProdutoDto produto) {
-        this.produto = produto;
-    }
-
-    /**
-     * @return the unidades
-     */
-    public int getUnidades() {
-        return unidades;
-    }
-
-    /**
-     * @param unidades the unidades to set
-     */
-    public void setUnidades(int unidades) {
-        this.unidades = unidades;
     }
 
     /**
@@ -79,20 +47,6 @@ public class CompraDto {
     }
 
     /**
-     * @return the qntdDesconto
-     */
-    public float getQntdDesconto() {
-        return qntdDesconto;
-    }
-
-    /**
-     * @param qntdDesconto the qntdDesconto to set
-     */
-    public void setQntdDesconto(float qntdDesconto) {
-        this.qntdDesconto = qntdDesconto;
-    }
-
-    /**
      * @return the desconto
      */
     public float getDesconto() {
@@ -104,6 +58,20 @@ public class CompraDto {
      */
     public void setDesconto(float desconto) {
         this.desconto = desconto;
+    }
+
+    /**
+     * @return the precoComDesconto
+     */
+    public float getPrecoComDesconto() {
+        return precoComDesconto;
+    }
+
+    /**
+     * @param precoComDesconto the precoComDesconto to set
+     */
+    public void setPrecoComDesconto(float precoComDesconto) {
+        this.precoComDesconto = precoComDesconto;
     }
     
     
